@@ -1,25 +1,23 @@
-# Projektets Namn
+# Shaboom Supplements
 
 ## Beskrivning
 
 Här beskriver du applikationens funktionalitet.
 
-### Exempel (ta bort)
-
-Book-O-Matic är en applikation där användare kan skapa virtuella bokhyllor. De kan mata in vilka böcker de har, och information om dessa. Man kan betygssätta böcker och skriva kommentarer. Om en bok är inlagd av en annan användare kan andra användare lägga till den i "sin" bokhylla, och skriva egna kommentarer och recensioner och sätta egna betyg. Man kan söka efter titlar och se kommentarer, recensioner och betyg
+Shaboom Supplements är en applikation där man ska kunna köpa och recensera tränings tillskott. Man ska även kunna sortera kost tillskotten utifrån olika kategorier för att hitta det man vill ha. Man kan lägga till saker i sin kundvagn, och sedan gå till checkout. Sedan ska man kunna recensera produkter som en inloggad användare, samt kolla på andras recensioner oavsett om man är inloggad eller ej.
 
 ## Användare och roller
 
 Här skriver du ner vilka typer av användare (som i inloggade användare) det finns, och vad de har för rättigheter, det vill säga, vad de kan göra (tänk admin, standard användare, etc).
 
-### Exempel (ta bort)
+Admin - Administrator
+Ta Bort kommentarer, Ta bort produkter, Lägga till produkter, Redigera produkter, Ta bort användare, Allt som standard användare också
 
-Gästanvändare - oinloggad
-. Kan söka efter titlar och se genomsnittligt betyg. Kan inte se eller skriva kommentarer eller sätta egna betyg.
+Standard User - Inloggad
+Recensera Produkter, Allt som Temp User
 
-Standardanvändare - inloggad. Kan allt gästanvändare kan, men kan även lägga in nya böcker och skriva kommentarer etc. Kan ta bort sitt eget konto och information kopplat till det.
-
-Adminanvändare - kan ta bort/editera böcker, kommentarer och användare.
+Temp User - Oinloggad
+Köpa produkter, lägga till i kundvagn, söka på produkter, sortera produkter, läsa recensioner
 
 ## ER-Diagram
 
@@ -29,8 +27,16 @@ Adminanvändare - kan ta bort/editera böcker, kommentarer och användare.
 
 **Login**
 
-![Er-Diagram](./ui_login.png?raw=true "ER-diagram")
+![Er-Diagram](./LogIn.jpg?raw=true "ER-diagram")
 
-**Visa bok**
+**Main Page**
 
-![Er-Diagram](./ui_show_book.png?raw=true "ER-diagram")
+![Er-Diagram](./Main_Page.jpg?raw=true "ER-diagram")
+
+**Product Page**
+
+![Er-Diagram](./Product_Page.jpg?raw=true "ER-diagram")
+
+**Cart**
+
+![Er-Diagram](./Cart.jpg?raw=true "ER-diagram")
