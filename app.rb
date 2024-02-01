@@ -17,9 +17,18 @@ class App < Sinatra::Base
         erb :'products/products'
     end
 
+    get '/products/create' do
+        erb :'products/product_create'
+    end 
+    
     get '/products/:id' do |id|
         @product = db.execute('SELECT * FROM products WHERE id = ?', params[:id]).first
         erb :'products/product_view'
+    end
+
+    post '/products/create' do
+        result = db.execute('INSERT INTO products (name, description, price) VALUES (?, ?, ?) RETURNING *', params[:name], params[:description], params[:price]).first
+        redirect "/products/#{result["id"]}"
     end
     
 end
