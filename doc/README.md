@@ -1,4 +1,4 @@
-# Shaboom Supplements
+# Shaboom Supplement Store
 
 ## Beskrivning
 
