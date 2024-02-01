@@ -20,6 +20,10 @@ class App < Sinatra::Base
     get '/products/create' do
         erb :'products/product_create'
     end 
+
+    get '/products/:id/delete' do |id|
+        erb :'products/product_delete'
+    end
     
     get '/products/:id' do |id|
         @product = db.execute('SELECT * FROM products WHERE id = ?', params[:id]).first
