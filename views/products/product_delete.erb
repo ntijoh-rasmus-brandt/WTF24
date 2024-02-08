@@ -1,4 +1,5 @@
-<form action="/products/:id/delete" method='post'>
-    Name: <input type="text" name='name'></input> <br> <br>
-    <button type="submit">Create</button>
+<p>Are you sure you would like to delete <%=@product['name']%>?</p>
+
+<form action="/products/<%=@product['id']%>/delete" method='post'>
+    <button type="submit">Delete</button>
 </form>

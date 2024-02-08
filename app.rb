@@ -22,17 +22,23 @@ class App < Sinatra::Base
     end 
 
     get '/products/:id/delete' do |id|
+        @product = db.execute('SELECT * FROM products WHERE id = ?', id).first
         erb :'products/product_delete'
     end
     
     get '/products/:id' do |id|
-        @product = db.execute('SELECT * FROM products WHERE id = ?', params[:id]).first
+        @product = db.execute('SELECT * FROM products WHERE id = ?', id).first
         erb :'products/product_view'
     end
 
     post '/products/create' do
         result = db.execute('INSERT INTO products (name, description, price) VALUES (?, ?, ?) RETURNING *', params[:name], params[:description], params[:price]).first
         redirect "/products/#{result["id"]}"
+    end
+
+    post '/products/:id/delete' do |id|
+        db.execute('DELETE FROM products WHERE id = ?', id)
+        redirect "/products"
     end
     
 end
