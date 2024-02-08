@@ -1,0 +1,16 @@
+#product_page{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+}
+
+.product{
+    flex: 20%;
+    max-width: 20%;
+    align-items: center;
+    justify-content: center;
+}
+
+.product_text{
+    text-align: center;
+}
