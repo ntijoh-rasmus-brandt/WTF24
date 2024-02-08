@@ -14,21 +14,21 @@ class App < Sinatra::Base
 
     get '/products' do 
         @products = db.execute('SELECT * FROM products')
-        erb :'products/products'
+        erb :'products/index'
     end
 
     get '/products/create' do
-        erb :'products/product_create'
+        erb :'products/create'
     end 
 
     get '/products/:id/delete' do |id|
         @product = db.execute('SELECT * FROM products WHERE id = ?', id).first
-        erb :'products/product_delete'
+        erb :'products/delete'
     end
     
     get '/products/:id' do |id|
         @product = db.execute('SELECT * FROM products WHERE id = ?', id).first
-        erb :'products/product_view'
+        erb :'products/view'
     end
 
     post '/products/create' do

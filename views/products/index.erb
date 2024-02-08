@@ -2,10 +2,11 @@
   <% @products.each do |product| %>
     <div class="product">
       <a href="products/<%=product['id']%>">
-      <img src="<%=product['image_path']%>" alt="<%=product['name']%>">
+      <img class="product_img"src="<%=product['image_path']%>" alt="<%=product['name']%>">
       <h2 class="product_text"><%= product['name'] %></h2>
       </a>
       <p class="product_text">Price: <%= product['price'] %></p>
     </div>
   <% end %>
 </div>
+
