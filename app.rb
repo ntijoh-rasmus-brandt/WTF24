@@ -44,6 +44,12 @@ class App < Sinatra::Base
         redirect "/products/#{result["id"]}"
     end
 
+    post '/products/review/:id' do |id|
+        result = db.execute('INSERT INTO reviews (rating, review) VALUES (?, ?) RETURNING *', params[:rating], params[:review])
+        db.execute ('INSERT INTO product_reviews (product_id, review_id)', id, result['id'])
+        redirect "/products/#{id}"
+    end
+
     post '/products/:id/delete' do |id|
         db.execute('DELETE FROM products WHERE id = ?', id)
         redirect "/products"

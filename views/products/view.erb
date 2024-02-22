@@ -6,4 +6,12 @@
 </div>
 
 <a href="/products">Return To Homepage</a>
-<a href="/products/<%=@product['id']%>/delete">Delete Product</a>
+<a href="/products/<%=@product['id']%>/delete">Delete Product</a><br><br>
+
+<form action="/products/review/<%=@product['id']%>" method='post'>
+    Rating: <input type="number" min = "0" max = "5" name='rating'></input><br><br>
+    Review: <input type="text" name='review'></input><br><br>
+    <button type="submit">Comment</button>
+</form>
+
+

@@ -10,18 +10,20 @@ end
 
 def drop_tables
     db.execute('DROP TABLE IF EXISTS products')
-    db.execute('DROP TABLE IF EXISTS comments')
+    db.execute('DROP TABLE IF EXISTS reviews')
     db.execute('DROP TABLE IF EXISTS product_tags')
     db.execute('DROP TABLE IF EXISTS tags')
-    db.execute('DROP TABLE IF EXISTS user_comments')
+    db.execute('DROP TABLE IF EXISTS user_reviews')
     db.execute('DROP TABLE IF EXISTS users')
+    db.execute('DROP TABLE IF EXISTS product_reviews')
 end
 
 def create_tables
 
-    db.execute('CREATE TABLE "comments" (
+    db.execute('CREATE TABLE "reviews" (
         "id"	INTEGER,
-        "value"	TEXT NOT NULL,
+        "review"	TEXT NOT NULL,
+        "rating"	INTEGER,
         PRIMARY KEY("id" AUTOINCREMENT)
     )')
     db.execute('CREATE TABLE "product_tags" (
@@ -41,9 +43,9 @@ def create_tables
         "name"	INTEGER NOT NULL,
         PRIMARY KEY("id" AUTOINCREMENT)
     )')
-    db.execute('CREATE TABLE "user_comments" (
+    db.execute('CREATE TABLE "user_reviews" (
         "user_id"	INTEGER,
-        "comment_id"	INTEGER
+        "review_id"	INTEGER
     )')
     db.execute('CREATE TABLE "users" (
         "id"	INTEGER,
@@ -51,6 +53,13 @@ def create_tables
         "password"	TEXT NOT NULL,
         PRIMARY KEY("id" AUTOINCREMENT)
     )')
+    db.execute('CREATE TABLE "product_reviews" (
+        "id"	INTEGER,
+        "product_id"	INTEGER,
+        "review_id"	INTEGER,
+        PRIMARY KEY("id" AUTOINCREMENT)
+    )')
+    
 
 end
 
