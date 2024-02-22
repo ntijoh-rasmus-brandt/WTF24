@@ -32,7 +32,15 @@ class App < Sinatra::Base
     end
 
     post '/products/create' do
-        result = db.execute('INSERT INTO products (name, description, price) VALUES (?, ?, ?) RETURNING *', params[:name], params[:description], params[:price]).first
+        file_name = params[:file][:filename]
+        file = params[:file][:tempfile]
+        file_path = "img/product/#{file_name}"
+
+        File.open("public/#{file_path}", 'wb') do |f|
+            f.write(file.read)
+        end
+
+        result = db.execute('INSERT INTO products (name, description, price, image_path) VALUES (?, ?, ?, ?) RETURNING *', params[:name], params[:description], params[:price], file_path).first
         redirect "/products/#{result["id"]}"
     end
 
