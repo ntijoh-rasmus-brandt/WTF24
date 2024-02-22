@@ -1,7 +1,7 @@
 <div id="product_page">
   <% @products.each do |product| %>
     <div class="product">
-      <a href="products/<%=product['id']%>">
+      <a class = "product_link" href="products/<%=product['id']%>">
       <img class="product_img"src="<%=product['image_path']%>" alt="<%=product['name']%>">
       <h2 class="product_text"><%= product['name'] %></h2>
       </a>

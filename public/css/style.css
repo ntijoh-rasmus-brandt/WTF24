@@ -17,5 +17,10 @@
 
 .product_img{
     width: 50%;
-    height: 20%;
+}
+
+.product_link{
+    align-items: center;
+    display: flex;
+    flex-direction: column;
 }
