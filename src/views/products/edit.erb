@@ -1,0 +1,7 @@
+<form action="/products/<%=@product['id']%>/update" method='post' enctype="multipart/form-data">
+    Name: <input type="text" name='name' value =<%=@product['name']%>></input> <br> <br>
+    Description: <input type="text" name='description' value =<%=@product['description']%>></input><br><br>
+    Price: <input type="number" name='price' value =<%=@product['price']%>></input><br><br>
+    Image: <input type="file" name='file' value =<%=@product['image_path']%>></input><br><br>
+    <button type="submit">Create</button>
+</form>

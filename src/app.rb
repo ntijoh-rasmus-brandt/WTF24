@@ -17,19 +17,24 @@ class App < Sinatra::Base
         erb :'products/index'
     end
 
-    get '/products/create' do
-        erb :'products/create'
+    get '/products/new' do
+        erb :'products/new'
     end 
-
-    get '/products/:id/delete' do |id|
-        @product = db.execute('SELECT * FROM products WHERE id = ?', id).first
-        erb :'products/delete'
-    end
     
     get '/products/:id' do |id|
         @product = db.execute('SELECT * FROM products WHERE id = ?', id).first
         @reviews = db.execute('SELECT * FROM reviews INNER JOIN product_reviews ON reviews.id = product_reviews.review_id INNER JOIN products ON product_reviews.product_id = products.id WHERE products.id = ?', id)
         erb :'products/show'
+    end
+
+    get '/products/:id/delete' do |id|
+        @product = db.execute('SELECT * FROM products WHERE id = ?', id).first
+        erb :'products/delete'
+    end
+
+    get '/products/:id/edit' do |id|
+        @product = db.execute('SELECT * FROM products WHERE id = ?', id).first
+        erb :'products/edit'
     end
 
     post '/products/create' do
@@ -56,6 +61,24 @@ class App < Sinatra::Base
         redirect "/products"
     end
 
+    post '/products/:id/update' do |id|
+        if params[:file] != nil
+            file_name = params[:file][:filename]
+            file = params[:file][:tempfile]
+            file_path = "img/product/#{file_name}"
+
+            File.open("public/#{file_path}", 'wb') do |f|
+                f.write(file.read)
+            end
+
+            result = db.execute('UPDATE products SET name = ?, description = ?, price= ?, image_path = ? WHERE id = ? RETURNING *', params[:name], params[:description], params[:price], file_path, id).first
+            redirect "/products/#{result['id']}"
+        else
+            result = db.execute('UPDATE products SET name = ?, description = ?, price= ? WHERE id = ? RETURNING *', params[:name], params[:description], params[:price], id).first
+            redirect "/products/#{result['id']}"
+        end
+    end
+
     get '/reviews/:id/delete' do |id|
         @review = db.execute('SELECT * FROM reviews WHERE id = ?', id).first
         erb :'reviews/delete'
@@ -63,8 +86,6 @@ class App < Sinatra::Base
 
     post '/reviews/:id/delete' do |id|
         product_id = db.execute('SELECT * FROM product_reviews WHERE review_id = ?', id).first['product_id']
-        p "PRODUCT ID ---------------------------------------"
-        p product_id
         db.execute('DELETE FROM product_reviews WHERE review_id = ?', id)
         db.execute('DELETE FROM reviews WHERE id  = ?', id)
         redirect "/products/#{product_id}"
