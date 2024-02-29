@@ -63,6 +63,9 @@ class App < Sinatra::Base
 
     post '/products/:id/update' do |id|
         if params[:file] != nil
+            product = db.execute('SELECT FROM products WHERE id = ?', id)
+            File.delete(product['image_path'])
+            
             file_name = params[:file][:filename]
             file = params[:file][:tempfile]
             file_path = "img/product/#{file_name}"
