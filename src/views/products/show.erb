@@ -12,4 +12,11 @@
     Rating: <input type="number" min = "0" max = "5" name='rating'></input><br><br>
     Review: <input type="text" name='review'></input><br><br>
     <button type="submit">Comment</button>
-</form>
+</form><br><br>
+
+<% @reviews.each do |review| %>
+    <div class="review">
+        <h2>Rating:<%=review['rating']%>/5</h2>
+        <p><%=review['review']%></p>
+    </div>
+<% end %>

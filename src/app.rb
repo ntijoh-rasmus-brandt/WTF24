@@ -28,6 +28,7 @@ class App < Sinatra::Base
     
     get '/products/:id' do |id|
         @product = db.execute('SELECT * FROM products WHERE id = ?', id).first
+        @reviews = db.execute('SELECT * FROM reviews INNER JOIN product_reviews ON reviews.id = product_reviews.review_id INNER JOIN products ON product_reviews.product_id = products.id WHERE products.id = ?', id)
         erb :'products/show'
     end
 
@@ -45,7 +46,7 @@ class App < Sinatra::Base
     end
 
     post '/products/review/:id' do |id|
-        result = db.execute('INSERT INTO reviews (rating, review) VALUES (?, ?) RETURNING *', params[:rating], params[:review])
+        result = db.execute('INSERT INTO reviews (rating, review) VALUES (?, ?) RETURNING *', params[:rating], params[:review]).first
         db.execute('INSERT INTO product_reviews (product_id, review_id) VALUES (?, ?)', id, result['id'])
         redirect "/products/#{id}"
     end
