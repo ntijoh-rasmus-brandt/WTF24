@@ -55,5 +55,19 @@ class App < Sinatra::Base
         db.execute('DELETE FROM products WHERE id = ?', id)
         redirect "/products"
     end
+
+    get '/reviews/:id/delete' do |id|
+        @review = db.execute('SELECT * FROM reviews WHERE id = ?', id).first
+        erb :'reviews/delete'
+    end
+
+    post '/reviews/:id/delete' do |id|
+        product_id = db.execute('SELECT * FROM product_reviews WHERE review_id = ?', id).first['product_id']
+        p "PRODUCT ID ---------------------------------------"
+        p product_id
+        db.execute('DELETE FROM product_reviews WHERE review_id = ?', id)
+        db.execute('DELETE FROM reviews WHERE id  = ?', id)
+        redirect "/products/#{product_id}"
+    end
     
 end
