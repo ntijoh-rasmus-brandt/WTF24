@@ -24,6 +24,17 @@ class App < Sinatra::Base
     get '/products/:id' do |id|
         @product = db.execute('SELECT * FROM products WHERE id = ?', id).first
         @reviews = db.execute('SELECT * FROM reviews INNER JOIN product_reviews ON reviews.id = product_reviews.review_id INNER JOIN products ON product_reviews.product_id = products.id WHERE products.id = ?', id)
+        sum_ratings = 0
+        amount = 0.0
+        @reviews.each do |review|
+            sum_ratings += review['rating']
+            amount += 1
+        end
+        if (amount == 0)
+            @rating = "Be the first the review!"
+        else
+            @rating = "#{(sum_ratings/amount).round(2)}/5" 
+        end
         erb :'products/show'
     end
 
@@ -75,11 +86,10 @@ class App < Sinatra::Base
             end
 
             result = db.execute('UPDATE products SET name = ?, description = ?, price= ?, image_path = ? WHERE id = ? RETURNING *', params[:name], params[:description], params[:price], file_path, id).first
-            redirect "/products/#{result['id']}"
         else
             result = db.execute('UPDATE products SET name = ?, description = ?, price= ? WHERE id = ? RETURNING *', params[:name], params[:description], params[:price], id).first
-            redirect "/products/#{result['id']}"
         end
+        redirect "/products/#{result['id']}"
     end
 
     get '/reviews/:id/delete' do |id|
