@@ -32,3 +32,7 @@
     margin-left: 1vw;
     padding: 5px;
 }
+
+#tags{
+    height: fit-content;
+}

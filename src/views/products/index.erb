@@ -1,4 +1,10 @@
 <div id="product_page">
+  <label for="tags">Select product tag:</label>
+  <select id="tags">
+    <% @tags.each do |tag| %>
+      <option value="<%=tag['name']%>"><%=tag['name']%></option>
+    <% end %>
+  </select>
   <% @products.each do |product| %>
     <div class="product">
       <a class = "product_link" href="products/<%=product['id']%>">

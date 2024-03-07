@@ -14,6 +14,8 @@ class App < Sinatra::Base
 
     get '/products' do 
         @products = db.execute('SELECT * FROM products')
+        @tags = db.execute('SELECT * FROM tags')
+        @product_tags = db.execute('SELECT * FROM reviews INNER JOIN product_reviews ON reviews.id = product_reviews.review_id INNER JOIN products ON product_reviews.product_id = products.id WHERE products.id = ?')
         erb :'products/index'
     end
 
@@ -49,9 +51,9 @@ class App < Sinatra::Base
     end
 
     post '/products/create' do
-        file_name = params[:file][:filename]
         file = params[:file][:tempfile]
-        file_path = "img/product/#{file_name}"
+        file_name = SecureRandom.alphanumeric(16)
+        file_path = "img/product/#{file_name}.jpg"
 
         File.open("public/#{file_path}", 'wb') do |f|
             f.write(file.read)
@@ -68,6 +70,8 @@ class App < Sinatra::Base
     end
 
     post '/products/:id/delete' do |id|
+        product = db.execute('SELECT FROM products WHERE id = ?', id)
+        File.delete(product['image_path'])
         db.execute('DELETE FROM products WHERE id = ?', id)
         redirect "/products"
     end
@@ -77,9 +81,9 @@ class App < Sinatra::Base
             product = db.execute('SELECT FROM products WHERE id = ?', id)
             File.delete(product['image_path'])
             
-            file_name = params[:file][:filename]
+            file_name = SecureRandom.alphanumeric(16)
             file = params[:file][:tempfile]
-            file_path = "img/product/#{file_name}"
+            file_path = "img/product/#{file_name}.jpg"
 
             File.open("public/#{file_path}", 'wb') do |f|
                 f.write(file.read)

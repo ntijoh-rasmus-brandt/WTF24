@@ -76,6 +76,19 @@ def seed_tables
         db.execute('INSERT INTO products (name, description, price, image_path) VALUES (?,?,?,?)', product[:name], product[:description], product[:price], product[:image_path])
     end
 
+    tags = [
+        {name: 'Supplements'},
+        {name: 'Protein'},
+        {name: 'Pre-Workout'},
+        {name: 'Snacks'}
+    ]
+
+    tags.each do |tag|
+        db.execute('INSERT INTO tags (name) VALUES (?)', tag[:name])
+    end
+
+    
+
 end
 
 drop_tables
