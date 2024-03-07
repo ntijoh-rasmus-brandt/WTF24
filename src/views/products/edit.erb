@@ -1,7 +1,18 @@
+<h1>Product</h1>
 <form action="/products/<%=@product['id']%>/update" method='post' enctype="multipart/form-data">
     Name: <input type="text" name='name' value =<%=@product['name']%>></input> <br> <br>
     Description: <input type="text" name='description' value =<%=@product['description']%>></input><br><br>
     Price: <input type="number" name='price' value =<%=@product['price']%>></input><br><br>
     Image: <input type="file" name='file' value =<%=@product['image_path']%>></input><br><br>
-    <button type="submit">Create</button>
+    <button type="submit">Update</button>
+</form><br><br>
+
+<h1>Tags</h1>
+<form action="/products/<%=@product['id']%>/update/tags">
+    <% @tags.each do |tag| %>
+        <input type="checkbox" name="<%=tag['name']%>">
+        <label for="<%=tag['name']%>"><%=tag['name']%></label>
+        <br>
+    <% end%>
+    <button type="submit">Update Tags</button>
 </form>

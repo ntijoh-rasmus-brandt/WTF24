@@ -15,7 +15,7 @@ class App < Sinatra::Base
     get '/products' do 
         @products = db.execute('SELECT * FROM products')
         @tags = db.execute('SELECT * FROM tags')
-        @product_tags = db.execute('SELECT * FROM reviews INNER JOIN product_reviews ON reviews.id = product_reviews.review_id INNER JOIN products ON product_reviews.product_id = products.id WHERE products.id = ?')
+        @product_tags = db.execute('SELECT * FROM tags INNER JOIN product_tags ON tags.id = product_tags.tag_id INNER JOIN products ON product_tags.product_id = products.id WHERE products')
         erb :'products/index'
     end
 
@@ -47,6 +47,8 @@ class App < Sinatra::Base
 
     get '/products/:id/edit' do |id|
         @product = db.execute('SELECT * FROM products WHERE id = ?', id).first
+        @tags = db.execute('SELECT * FROM tags')
+        @product_tags = db.execute('SELECT * FROM tags INNER JOIN product_tags ON tags.id = product_tags.tag_id INNER JOIN products ON product_tags.product_id = products.id WHERE products WHERE id = ?' id)
         erb :'products/edit'
     end
 
@@ -94,6 +96,10 @@ class App < Sinatra::Base
             result = db.execute('UPDATE products SET name = ?, description = ?, price= ? WHERE id = ? RETURNING *', params[:name], params[:description], params[:price], id).first
         end
         redirect "/products/#{result['id']}"
+    end
+
+    post '/products/:id/update/tags' do |id|
+
     end
 
     get '/reviews/:id/delete' do |id|
