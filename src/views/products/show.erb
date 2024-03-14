@@ -6,6 +6,11 @@
     <h2>Rating: <%=@rating%></h2>
 </div>
 
+<h3>Tags:</h3>
+<% @product_tags.each do |tag| %>
+    <p><%=tag['tag_name']%></p>
+<% end %>
+
 <a href="/products">Return To Homepage</a>
 <a href="/products/<%=@product['id']%>/edit">Edit Product</a>
 <a href="/products/<%=@product['id']%>/delete">Delete Product</a><br><br>

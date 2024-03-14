@@ -40,7 +40,7 @@ def create_tables
     )')
     db.execute('CREATE TABLE "tags" (
         "id"	INTEGER,
-        "name"	INTEGER NOT NULL,
+        "tag_name"	INTEGER NOT NULL,
         PRIMARY KEY("id" AUTOINCREMENT)
     )')
     db.execute('CREATE TABLE "user_reviews" (
@@ -84,7 +84,7 @@ def seed_tables
     ]
 
     tags.each do |tag|
-        db.execute('INSERT INTO tags (name) VALUES (?)', tag[:name])
+        db.execute('INSERT INTO tags (tag_name) VALUES (?)', tag[:name])
     end
 
     

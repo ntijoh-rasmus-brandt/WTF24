@@ -15,7 +15,7 @@ class App < Sinatra::Base
     get '/products' do 
         @products = db.execute('SELECT * FROM products')
         @tags = db.execute('SELECT * FROM tags')
-        @product_tags = db.execute('SELECT * FROM tags INNER JOIN product_tags ON tags.id = product_tags.tag_id INNER JOIN products ON product_tags.product_id = products.id WHERE products')
+        @product_tags = db.execute('SELECT * FROM tags INNER JOIN product_tags ON tags.id = product_tags.tag_id INNER JOIN products ON product_tags.product_id = products.id')
         erb :'products/index'
     end
 
@@ -26,6 +26,7 @@ class App < Sinatra::Base
     get '/products/:id' do |id|
         @product = db.execute('SELECT * FROM products WHERE id = ?', id).first
         @reviews = db.execute('SELECT * FROM reviews INNER JOIN product_reviews ON reviews.id = product_reviews.review_id INNER JOIN products ON product_reviews.product_id = products.id WHERE products.id = ?', id)
+        @product_tags = db.execute('SELECT * FROM tags INNER JOIN product_tags ON tags.id = product_tags.tag_id INNER JOIN products ON products.id = product_tags.product_id WHERE products.id = ?', id)
         sum_ratings = 0
         amount = 0.0
         @reviews.each do |review|
@@ -33,7 +34,7 @@ class App < Sinatra::Base
             amount += 1
         end
         if (amount == 0)
-            @rating = "Be the first the review!"
+            @rating = "Be the first to review!"
         else
             @rating = "#{(sum_ratings/amount).round(2)}/5" 
         end
@@ -48,7 +49,7 @@ class App < Sinatra::Base
     get '/products/:id/edit' do |id|
         @product = db.execute('SELECT * FROM products WHERE id = ?', id).first
         @tags = db.execute('SELECT * FROM tags')
-        @product_tags = db.execute('SELECT * FROM tags INNER JOIN product_tags ON tags.id = product_tags.tag_id INNER JOIN products ON product_tags.product_id = products.id WHERE products WHERE id = ?' id)
+        @product_tags = db.execute('SELECT * FROM tags INNER JOIN product_tags ON tags.id = product_tags.tag_id INNER JOIN products ON products.id = product_tags.product_id WHERE products.id = ?', id)
         erb :'products/edit'
     end
 
