@@ -1,5 +1,7 @@
 class App < Sinatra::Base
 
+    enable :sessions
+
     def db
         if @db == nil
             @db = SQLite3::Database.new('./db/db.sqlite')
@@ -114,5 +116,27 @@ class App < Sinatra::Base
         db.execute('DELETE FROM reviews WHERE id  = ?', id)
         redirect "/products/#{product_id}"
     end
+
+    get '/users/register' do
+        erb :'users/register'
+    end
+
+    get '/users/login' do
+        erb :'users/login'
+    end
+
+    post '/users/register' do
+        db.execute('INSERT INTO users (username, password) VALUES (?,?)', params[:username], params[:password])
+        redirect '/users/login'
+    end
+
+    post '/users/login' do
+        user = db.execute('SELECT * FROM users WHERE username = ?', params[:username]).first
+        if user['password'] == params[:password]
+            redirect '/products/1'
+        else
+            redirect '/products/2'
+        end
+    end
     
-end
+end 
