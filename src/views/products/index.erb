@@ -3,7 +3,7 @@
   <form id="tagsForm" action="/products/tags" method="post">
     <select id="tags">
       <% @tags.each do |tag| %>
-        <option value="<%=tag['name']%>"><%=tag['name']%></option>
+        <option value="<%=tag['tag_name']%>"><%=tag['tag_name']%></option>
       <% end %>
     </select>
   </form>
