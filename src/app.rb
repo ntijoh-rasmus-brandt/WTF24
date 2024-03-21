@@ -10,14 +10,24 @@ class App < Sinatra::Base
         return @db
     end
 
+    helpers do
+        def h(text)
+            Rack::Utils.escape_html(text)
+        end
+    end
+
     get '/' do
-        erb :index
+        redirect "/products/tag/all"
     end
 
     get '/products' do 
+        # redirect "/products/tag/all"
+    end
+
+    get '/products/tag/:tag' do |tag|
         @products = db.execute('SELECT * FROM products')
         @tags = db.execute('SELECT * FROM tags')
-        @product_tags = db.execute('SELECT * FROM tags INNER JOIN product_tags ON tags.id = product_tags.tag_id INNER JOIN products ON product_tags.product_id = products.id')
+        @product_tags = db.execute('SELECT * FROM tags INNER JOIN product_tags ON tags.id = product_tags.tag_id INNER JOIN products ON product_tags.product_id = products.id WHERE tags.tag_name = ?', tag)
         erb :'products/index'
     end
 
@@ -69,9 +79,14 @@ class App < Sinatra::Base
     end
 
     post '/products/review/:id' do |id|
-        result = db.execute('INSERT INTO reviews (rating, review) VALUES (?, ?) RETURNING *', params[:rating], params[:review]).first
+        result = db.execute('INSERT INTO reviews (rating, review) VALUES (?, ?) RETURNING *', params[:rating], h(params[:review])).first
         db.execute('INSERT INTO product_reviews (product_id, review_id) VALUES (?, ?)', id, result['id'])
         redirect "/products/#{id}"
+    end
+
+    post '/products/tags' do
+        tag = params[:tags]
+        redirect "/products/tag/#{tag}"
     end
 
     post '/products/:id/delete' do |id|
@@ -99,10 +114,6 @@ class App < Sinatra::Base
             result = db.execute('UPDATE products SET name = ?, description = ?, price= ? WHERE id = ? RETURNING *', params[:name], params[:description], params[:price], id).first
         end
         redirect "/products/#{result['id']}"
-    end
-
-    post '/products/:id/update/tags' do |id|
-
     end
 
     get '/reviews/:id/delete' do |id|

@@ -7,16 +7,17 @@
 </div>
 
 <h3>Tags:</h3>
-<% @product_tags.each do |tag| %>
-    <p><%=tag['tag_name']%></p>
-<% end %>
-
+<ul>
+    <% @product_tags.each do |tag| %>
+        <li><%=tag['tag_name']%></li>
+    <% end %>
+</ul>
 <a href="/products">Return To Homepage</a>
 <a href="/products/<%=@product['id']%>/edit">Edit Product</a>
 <a href="/products/<%=@product['id']%>/delete">Delete Product</a><br><br>
 
 <form action="/products/review/<%=@product['id']%>" method='post'>
-    Rating: <input type="number" min = "0" max = "5" name='rating'></input><br><br>
+    Rating: <input type="number" min = "0" max = "5" required="required" name='rating'></input><br><br>
     Review: <input type="text" name='review'></input><br><br>
     <button type="submit">Comment</button>
 </form><br><br>

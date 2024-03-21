@@ -1,21 +1,23 @@
 <div id="product_page">
   <label for="tags">Select product tag:</label>
   <form id="tagsForm" action="/products/tags" method="post">
-    <select id="tags">
+    <select name="tags" onchange="this.form.submit()">
+      <option value="All">All</option>
       <% @tags.each do |tag| %>
-        <option value="<%=tag['tag_name']%>"><%=tag['tag_name']%></option>
+          <option value="<%=tag['tag_name']%>"><%=tag['tag_name']%></option>
       <% end %>
     </select>
   </form>
 
   <% @products.each do |product| %>
-    <div class="product">
-      <a class = "product_link" href="products/<%=product['id']%>">
-      <img class="product_img"src="<%=product['image_path']%>" alt="<%=product['name']%>">
-      <h2 class="product_text"><%= product['name'] %></h2>
-      </a>
-      <p class="product_text">Price: <%= product['price'] %></p>
-    </div>
+    <%# <%if @product_tags != [] && product['name'] == @product_tags['name'] && @selected_tag != "All"%> %>
+      <div class="product">
+        <a class = "product_link" href="products/<%=product['id']%>">
+        <img class="product_img"src="<%=product['image_path']%>" alt="<%=product['name']%>">
+        <h2 class="product_text"><%= product['name'] %></h2>
+        </a>
+        <p class="product_text">Price: <%= product['price'] %></p>
+      </div>
+    <%# <% end %> %>
   <% end %>
 </div>
-
