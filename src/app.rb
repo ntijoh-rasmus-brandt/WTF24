@@ -28,6 +28,7 @@ class App < Sinatra::Base
         @tags = db.execute('SELECT * FROM tags')
         @product_ids = db.execute('SELECT product_id FROM tags INNER JOIN product_tags ON tags.id = product_tags.tag_id INNER JOIN products ON product_tags.product_id = products.id WHERE tags.tag_name = ?', tag)
         @products = db.execute('SELECT * FROM products')
+
         erb :'products/index'
     end
 

@@ -9,10 +9,10 @@
     </select>
   </form>
 
-<%= @product_ids.inspect %>
+<%= @products_ids.inspect %>
 
   <% @products.each do |product| %>
-    <%if @product_ids.include?(product['id'])%>
+    <%if @product_ids == product['id']%>
       <div class="product">
         <a class = "product_link" href="/products/<%=product['id']%>">
         <img class="product_img"src="<%=product['image_path']%>" alt="<%=product['name']%>">
