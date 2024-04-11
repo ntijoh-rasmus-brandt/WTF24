@@ -9,15 +9,17 @@
     </select>
   </form>
 
+<%= @product_ids.inspect %>
+
   <% @products.each do |product| %>
-    <%# <%if @product_tags != [] && product['name'] == @product_tags['name'] && @selected_tag != "All"%> %>
+    <%if @product_ids.include?(product['id'])%>
       <div class="product">
-        <a class = "product_link" href="products/<%=product['id']%>">
+        <a class = "product_link" href="/products/<%=product['id']%>">
         <img class="product_img"src="<%=product['image_path']%>" alt="<%=product['name']%>">
         <h2 class="product_text"><%= product['name'] %></h2>
         </a>
         <p class="product_text">Price: <%= product['price'] %></p>
       </div>
-    <%# <% end %> %>
+    <% end %>
   <% end %>
 </div>

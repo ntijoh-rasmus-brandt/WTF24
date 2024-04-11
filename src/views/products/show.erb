@@ -1,5 +1,5 @@
 <div class="product">
-    <img class="product_img"src="/<%=@product['image_path']%>" alt="<%=@product['name']%>">
+    <img class="product_img"src="<%=@product['image_path']%>" alt="<%=@product['name']%>">
     <h2><%= @product['name'] %></h2>
     <p><%= @product['description'] %></p>
     <p>Price: <%= @product['price'] %></p>
@@ -12,7 +12,7 @@
         <li><%=tag['tag_name']%></li>
     <% end %>
 </ul>
-<a href="/products">Return To Homepage</a>
+<a href="/products/tag/all">Return To Homepage</a>
 <a href="/products/<%=@product['id']%>/edit">Edit Product</a>
 <a href="/products/<%=@product['id']%>/delete">Delete Product</a><br><br>
 
