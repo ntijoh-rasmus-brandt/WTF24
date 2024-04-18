@@ -8,26 +8,22 @@
 </form><br><br>
 
 <h1>Tags</h1>
+<h3>Delete Tags:</h3>
+<ul>
+    <% @product_tags.each do |tag| %>
+        <li><p><%=tag['tag_name']%></p>
+        <form action="/products/<%=@product['id']%>/edit/delete_tag/<%=tag['id']%>" method ='post'>
+        <button type="submit">Delete</button>
+        </form></li>
+    <% end %>
+</ul>
+
+<h3>Add Tags:</h3>
 <form action="/products/<%=@product['id']%>/update/tags">
-    <% @tags.each do |tag| %>
-        <%has_tag = false%>
-        <%i = 0%>
-            <%while i < @product_tags.length%>
-                <% @product_tags.each do |product_tag| %>
-                    <%if tag['tag_name'] == product_tag['tag_name']%>
-                        <%has_tag = true%>
-                    <%end%>
-                <%end%>
-                <%i += 1%>
-            <%end%>
-            <%if has_tag%>
-                <input type="checkbox" name="<%=tag['tag_name']%>" checked>
-                <label for="<%=tag['name']%>"><%=tag['tag_name']%></label>
-            <%else%>
-                <input type="checkbox" name="<%=tag['tag_name']%>">
-                <label for="<%=tag['name']%>"><%=tag['tag_name']%></label>
-            <%end%>
-        <br>
-    <% end%>
-    <button type="submit">Update Tags</button>
+    <select name="tags" onchange="this.form.submit()">
+      <option disabled selected value> -- add a tag -- </option>
+      <% @tags.each do |tag| %>
+          <option value="<%=tag['tag_name']%>"><%=tag['tag_name']%></option>
+      <% end %>
+    </select>
 </form>

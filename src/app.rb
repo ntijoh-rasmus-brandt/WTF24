@@ -100,6 +100,11 @@ class App < Sinatra::Base
         redirect "/products"
     end
 
+    post '/products/:id/edit/delete_tag/:tag_id' do |product_id, tag_id|
+        db.execute('DELETE FROM product_tags WHERE product_id = ? AND tag_id = ?', product_id, tag_id)
+        redirect "/products/#{product_id}/edit"
+    end
+
     post '/products/:id/update' do |id|
         if params[:file] != nil
             product = db.execute('SELECT FROM products WHERE id = ?', id)
