@@ -2,6 +2,7 @@
   <label for="tags">Select product tag:</label>
   <form id="tagsForm" action="/products/tags" method="post">
     <select name="tags" onchange="this.form.submit()">
+      <option disabled selected value> -- select an option -- </option>
       <option value="All">All</option>
       <% @tags.each do |tag| %>
           <option value="<%=tag['tag_name']%>"><%=tag['tag_name']%></option>
@@ -9,10 +10,7 @@
     </select>
   </form>
 
-<%= @products_ids.inspect %>
-
   <% @products.each do |product| %>
-    <%if @product_ids == product['id']%>
       <div class="product">
         <a class = "product_link" href="/products/<%=product['id']%>">
         <img class="product_img"src="<%=product['image_path']%>" alt="<%=product['name']%>">
@@ -20,6 +18,5 @@
         </a>
         <p class="product_text">Price: <%= product['price'] %></p>
       </div>
-    <% end %>
   <% end %>
 </div>

@@ -21,14 +21,17 @@ class App < Sinatra::Base
     end
 
     get '/products' do 
-        # redirect "/products/tag/all"
+        redirect "/products/tag/all"
     end
 
     get '/products/tag/:tag' do |tag|
+        # binding.break
+        if tag == "All"
+            @products = db.execute ('SELECT * FROM products')
+        else
+            @products = db.execute('SELECT products.id, products.name, products.description, products.price, products.image_path FROM tags INNER JOIN product_tags ON tags.id = product_tags.tag_id INNER JOIN products ON product_tags.product_id = products.id WHERE tags.tag_name = ?', tag)
+        end
         @tags = db.execute('SELECT * FROM tags')
-        @product_ids = db.execute('SELECT product_id FROM tags INNER JOIN product_tags ON tags.id = product_tags.tag_id INNER JOIN products ON product_tags.product_id = products.id WHERE tags.tag_name = ?', tag)
-        @products = db.execute('SELECT * FROM products')
-
         erb :'products/index'
     end
 
