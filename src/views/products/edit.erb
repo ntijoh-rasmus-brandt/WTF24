@@ -10,8 +10,23 @@
 <h1>Tags</h1>
 <form action="/products/<%=@product['id']%>/update/tags">
     <% @tags.each do |tag| %>
-        <input type="checkbox" name="<%=tag['name']%>">
-        <label for="<%=tag['name']%>"><%=tag['name']%></label>
+        <%has_tag = false%>
+        <%i = 0%>
+            <%while i < @product_tags.length%>
+                <% @product_tags.each do |product_tag| %>
+                    <%if tag['tag_name'] == product_tag['tag_name']%>
+                        <%has_tag = true%>
+                    <%end%>
+                <%end%>
+                <%i += 1%>
+            <%end%>
+            <%if has_tag%>
+                <input type="checkbox" name="<%=tag['tag_name']%>" checked>
+                <label for="<%=tag['name']%>"><%=tag['tag_name']%></label>
+            <%else%>
+                <input type="checkbox" name="<%=tag['tag_name']%>">
+                <label for="<%=tag['name']%>"><%=tag['tag_name']%></label>
+            <%end%>
         <br>
     <% end%>
     <button type="submit">Update Tags</button>
