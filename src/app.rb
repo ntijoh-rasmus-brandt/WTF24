@@ -17,11 +17,11 @@ class App < Sinatra::Base
     end
 
     get '/' do
-        redirect "/products/tag/all"
+        redirect "/products/tag/All"
     end
 
     get '/products' do 
-        redirect "/products/tag/all"
+        redirect "/products/tag/All"
     end
 
     get '/products/tag/:tag' do |tag|
