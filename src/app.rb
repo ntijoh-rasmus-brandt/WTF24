@@ -100,8 +100,18 @@ class App < Sinatra::Base
         redirect "/products"
     end
 
-    post '/products/:id/edit/delete_tag/:tag_id' do |product_id, tag_id|
+    post '/products/:id/update/delete_tag/:tag_id' do |product_id, tag_id|
         db.execute('DELETE FROM product_tags WHERE product_id = ? AND tag_id = ?', product_id, tag_id)
+        redirect "/products/#{product_id}/edit"
+    end
+
+    post '/products/:id/update/add_tag' do |product_id|
+        puts params.inspect
+        tag_id = params[:tag_select]
+        puts "Tag ID --------------------"
+        p tag_id
+        p product_id
+        db.execute('INSERT INTO product_tags (product_id, tag_id) VALUES (?, ?)', product_id, tag_id)
         redirect "/products/#{product_id}/edit"
     end
 

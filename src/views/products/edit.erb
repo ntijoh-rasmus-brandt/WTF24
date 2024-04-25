@@ -12,18 +12,27 @@
 <ul>
     <% @product_tags.each do |tag| %>
         <li><p><%=tag['tag_name']%></p>
-        <form action="/products/<%=@product['id']%>/edit/delete_tag/<%=tag['id']%>" method ='post'>
+        <form action="/products/<%=@product['id']%>/update/delete_tag/<%=tag['id']%>" method ='post'>
         <button type="submit">Delete</button>
         </form></li>
     <% end %>
 </ul>
 
 <h3>Add Tags:</h3>
-<form action="/products/<%=@product['id']%>/update/tags">
-    <select name="tags" onchange="this.form.submit()">
-      <option disabled selected value> -- add a tag -- </option>
+    <form action="/products/<%=@product['id']%>/update/add_tag" method = 'post' id="add_tag_form">
+        <button type="submit">Add</button>
+    </form>
+
+    <label for="tags_select">Choose tag:</label>
+    <select id= "tags_select" name="tag_select" form="add_tag_form">
+      <option disabled selected value> -- choose a tag -- </option>
       <% @tags.each do |tag| %>
-          <option value="<%=tag['tag_name']%>"><%=tag['tag_name']%></option>
+            <option value="<%=tag['id']%>"><%=tag['tag_name']%></option>
       <% end %>
     </select>
-</form>
+
+    <br>
+    <br>
+
+
+<a href="/products/tag/all">Return To Homepage</a>
