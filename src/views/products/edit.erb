@@ -11,8 +11,8 @@
 <h3>Delete Tags:</h3>
 <ul>
     <% @product_tags.each do |tag| %>
+        <form action="/products/<%=@product['id']%>/update/delete_tag/<%=tag['tag_id']%>" method ='post'>
         <li><p><%=tag['tag_name']%></p>
-        <form action="/products/<%=@product['id']%>/update/delete_tag/<%=tag['id']%>" method ='post'>
         <button type="submit">Delete</button>
         </form></li>
     <% end %>
