@@ -1,3 +1,9 @@
+require_relative 'models/product'
+require_relative 'models/tag'
+require_relative 'models/review'
+require_relative 'models/user'
+
+
 class App < Sinatra::Base
 
     enable :sessions
@@ -34,11 +40,11 @@ class App < Sinatra::Base
     get '/products/tag/:tag' do |tag|
         # binding.break
         if tag == "All"
-            @products = db.execute ('SELECT * FROM products')
+            @products = Product.all
         else
-            @products = db.execute('SELECT products.id, products.name, products.description, products.price, products.image_path FROM tags INNER JOIN product_tags ON tags.id = product_tags.tag_id INNER JOIN products ON product_tags.product_id = products.id WHERE tags.tag_name = ?', tag)
+            @products = Product.with_tag(tag)
         end
-        @tags = db.execute('SELECT * FROM tags')
+        @tags = Tag.all
         erb :'products/index'
     end
 
@@ -47,9 +53,9 @@ class App < Sinatra::Base
     end 
     
     get '/products/:id' do |id|
-        @product = db.execute('SELECT * FROM products WHERE id = ?', id).first
-        @reviews = db.execute('SELECT * FROM reviews INNER JOIN product_reviews ON reviews.id = product_reviews.review_id INNER JOIN products ON product_reviews.product_id = products.id INNER JOIN user_reviews ON product_reviews.review_id = user_reviews.review_id INNER JOIN users ON user_reviews.user_id = users.id WHERE products.id = ?', id)
-        @product_tags = db.execute('SELECT * FROM tags INNER JOIN product_tags ON tags.id = product_tags.tag_id INNER JOIN products ON products.id = product_tags.product_id WHERE products.id = ?', id)
+        @product = Product.find(id)
+        @reviews = Review.for_product(id)
+        @product_tags = Tag.on_product(id)
         sum_ratings = 0
         amount = 0.0
         @reviews.each do |review|
@@ -68,7 +74,7 @@ class App < Sinatra::Base
         if @user_access != 2
             redirect "/"
         else
-            @product = db.execute('SELECT * FROM products WHERE id = ?', id).first
+            @product = Product.find(id)
             erb :'products/delete'
         end
     end
@@ -77,9 +83,9 @@ class App < Sinatra::Base
         if @user_access != 2
             redirect "/"
         else
-            @product = db.execute('SELECT * FROM products WHERE id = ?', id).first
-            @tags = db.execute('SELECT * FROM tags')
-            @product_tags = db.execute('SELECT * FROM tags INNER JOIN product_tags ON tags.id = product_tags.tag_id INNER JOIN products ON products.id = product_tags.product_id WHERE products.id = ?', id)
+            @product = Product.find(id)
+            @tags = Tag.all
+            @product_tags = Tag.on_product(id)
             erb :'products/edit'
         end
     end
@@ -96,7 +102,7 @@ class App < Sinatra::Base
                 f.write(file.read)
             end
 
-            result = db.execute('INSERT INTO products (name, description, price, image_path) VALUES (?, ?, ?, ?) RETURNING *', params[:name], params[:description], params[:price], file_path).first
+            result = Product.create(params[:name], params[:description], params[:price], file_path)
             redirect "/products/#{result["id"]}"
         end
     end
@@ -110,9 +116,9 @@ class App < Sinatra::Base
         if @user_access != 2
             redirect "/"
         else
-            product = db.execute('SELECT FROM products WHERE id = ?', id)
+            product = Product.find(id)
             File.delete(product['image_path'])
-            db.execute('DELETE FROM products WHERE id = ?', id)
+            Product.delete(id)
             redirect "/products"
         end
     end
@@ -121,7 +127,7 @@ class App < Sinatra::Base
         if @user_access != 2
             redirect "/"
         else
-            db.execute('DELETE FROM product_tags WHERE product_id = ? AND tag_id = ?', product_id, tag_id)
+            Tag.delete(product_id, tag_id)
             redirect "/products/#{product_id}/edit"
         end
     end
@@ -131,9 +137,9 @@ class App < Sinatra::Base
             redirect "/"
         else
             tag_id = params[:tag_select]
-            exists = db.execute('SELECT * FROM product_tags WHERE product_id = ? AND tag_id = ?', product_id, tag_id)
+            exists = Tag.exists_on_product(product_id, tag_id)
             if exists.empty?
-                db.execute('INSERT INTO product_tags (product_id, tag_id) VALUES (?, ?)', product_id, tag_id)
+                Tag.add_on_product(product_id, tag_id)
             end
             redirect "/products/#{product_id}/edit"
         end
@@ -144,7 +150,7 @@ class App < Sinatra::Base
             redirect "/"
         else
             if params[:file] != nil
-                product = db.execute('SELECT FROM products WHERE id = ?', id)
+                product = Product.find(id)
                 File.delete(product['image_path'])
                 
                 file_name = SecureRandom.alphanumeric(16)
@@ -155,18 +161,18 @@ class App < Sinatra::Base
                     f.write(file.read)
                 end
 
-                result = db.execute('UPDATE products SET name = ?, description = ?, price= ?, image_path = ? WHERE id = ? RETURNING *', params[:name], params[:description], params[:price], file_path, id).first
+                result = Product.update_with_image(params[:name], params[:description], params[:price], file_path, id)
             else
-                result = db.execute('UPDATE products SET name = ?, description = ?, price= ? WHERE id = ? RETURNING *', params[:name], params[:description], params[:price], id).first
+                result = Product.update(params[:name], params[:description], params[:price], id)
             end
             redirect "/products/#{result['id']}"
         end
     end
 
     post '/review/:id/create' do |id|
-        result = db.execute('INSERT INTO reviews (rating, review) VALUES (?, ?) RETURNING *', params[:rating], h(params[:review])).first
-        db.execute('INSERT INTO product_reviews (product_id, review_id) VALUES (?, ?)', id, result['id'])
-        db.execute('INSERT INTO user_reviews (user_id, review_id) VALUES (?, ?)', @user_id, result['id'])
+        result = Review.create(params[:rating], h(params[:review]))
+        Review.link_product(id, result['id'])
+        Review.link_user(@user_id, result['id'])
         redirect "/products/#{id}"
     end
 
@@ -174,7 +180,7 @@ class App < Sinatra::Base
         if @user_access != 2
             redirect "/"
         else
-            @review = db.execute('SELECT * FROM reviews WHERE id = ?', id).first
+            @review = Review.find(id)
             erb :'reviews/delete'
         end
     end
@@ -183,9 +189,9 @@ class App < Sinatra::Base
         if @user_access != 2
             redirect "/"
         else
-            product_id = db.execute('SELECT * FROM product_reviews WHERE review_id = ?', id).first['product_id']
-            db.execute('DELETE FROM product_reviews WHERE review_id = ?', id)
-            db.execute('DELETE FROM reviews WHERE id  = ?', id)
+            product_id = Review.product_id(id)
+            Review.delete_product_link(id)
+            Review.delete(id)
             redirect "/products/#{product_id}"
         end
     end
@@ -215,10 +221,10 @@ class App < Sinatra::Base
     end
 
     post '/users/register' do
-        exists = db.execute('SELECT * FROM users WHERE username = ?', params[:username])
+        exists = User.find_username(params[:username])
         if exists.empty?
             hashed_password = BCrypt::Password.create(params[:password])
-            db.execute('INSERT INTO users (username, password, access) VALUES (?,?,?)', h(params[:username]), hashed_password, 1)
+            User.create(h(params[:username]), hashed_password, 1)
             redirect '/users/login'
         else
             redirect '/users/register'
@@ -227,7 +233,7 @@ class App < Sinatra::Base
     end
 
     post '/users/login' do
-        user = db.execute('SELECT * FROM users WHERE username = ?', h(params[:username])).first
+        user = User.find_username(h(params[:username])).first
         password_from_db = BCrypt::Password.new(user['password'])
         if password_from_db == params[:password]
             session[:user_id] = user['id']
