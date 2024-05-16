@@ -40,6 +40,10 @@ class App < Sinatra::Base
     end 
     
     get '/products/:id' do |id|
+        @user_id = session[:user_id]
+        @user_access = db.execute('SELECT access FROM users WHERE id = ?', @user_id).first
+        p @user_access
+
         @product = db.execute('SELECT * FROM products WHERE id = ?', id).first
         @reviews = db.execute('SELECT * FROM reviews INNER JOIN product_reviews ON reviews.id = product_reviews.review_id INNER JOIN products ON product_reviews.product_id = products.id WHERE products.id = ?', id)
         @product_tags = db.execute('SELECT * FROM tags INNER JOIN product_tags ON tags.id = product_tags.tag_id INNER JOIN products ON products.id = product_tags.product_id WHERE products.id = ?', id)
@@ -147,25 +151,55 @@ class App < Sinatra::Base
     end
 
     get '/users/register' do
-        erb :'users/register'
+        if session[:user_id] == nil
+            erb :'users/register'
+        else
+            redirect '/'
+        end
     end
 
     get '/users/login' do
-        erb :'users/login'
+        if session[:user_id] == nil
+            erb :'users/login'
+        else
+            redirect '/'
+        end
+    end
+
+    get '/users/logout' do
+        if session[:user_id] != nil
+            erb :'users/logout'
+        else
+            redirect '/'
+        end
     end
 
     post '/users/register' do
-        db.execute('INSERT INTO users (username, password) VALUES (?,?)', params[:username], params[:password])
-        redirect '/users/login'
+        exists = db.execute('SELECT * FROM users WHERE username = ?', params[:username])
+        if exists.empty?
+            hashed_password = BCrypt::Password.create(params[:password])
+            db.execute('INSERT INTO users (username, password, access) VALUES (?,?,?)', params[:username], hashed_password, 1)
+            redirect '/users/login'
+        else
+            redirect '/users/register'
+        end
+
     end
 
     post '/users/login' do
         user = db.execute('SELECT * FROM users WHERE username = ?', params[:username]).first
-        if user['password'] == params[:password]
+        password_from_db = BCrypt::Password.new(user['password'])
+        if password_from_db == params[:password]
+            session[:user_id] = user['id']
             redirect '/products/1'
         else
             redirect '/products/2'
         end
+    end
+
+    post '/users/logout' do
+        session.destroy
+        redirect '/'
     end
     
 end 

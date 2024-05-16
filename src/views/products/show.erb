@@ -12,9 +12,12 @@
         <li><%=tag['tag_name']%></li>
     <% end %>
 </ul>
-<a href="/products/tag/all">Return To Homepage</a>
-<a href="/products/<%=@product['id']%>/edit">Edit Product</a>
-<a href="/products/<%=@product['id']%>/delete">Delete Product</a><br><br>
+<a href="/products/tag/All">Return To Homepage</a>
+
+<% if @user_access != nil && @user_access['access'] == 2 %>
+    <a href="/products/<%=@product['id']%>/edit">Edit Product</a>
+    <a href="/products/<%=@product['id']%>/delete">Delete Product</a><br><br>
+<% end %>
 
 <form action="/products/review/<%=@product['id']%>" method='post'>
     Rating: <input type="number" min = "0" max = "5" required="required" name='rating'></input><br><br>
