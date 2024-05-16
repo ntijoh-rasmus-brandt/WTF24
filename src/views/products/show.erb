@@ -19,7 +19,7 @@
     <a href="/products/<%=@product['id']%>/delete">Delete Product</a><br><br>
 <% end %>
 
-<form action="/products/review/<%=@product['id']%>" method='post'>
+<form action="/review/<%=@product['id']%>/create" method='post'>
     Rating: <input type="number" min = "0" max = "5" required="required" name='rating'></input><br><br>
     Review: <input type="text" name='review'></input><br><br>
     <button type="submit">Comment</button>

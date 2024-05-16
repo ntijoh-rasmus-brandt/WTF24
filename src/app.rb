@@ -16,6 +16,11 @@ class App < Sinatra::Base
         end
     end
 
+    before do
+        @user_id = session[:user_id]
+        @user_access = db.execute('SELECT access FROM users WHERE id = ?', @user_id).first
+    end
+
     get '/' do
         redirect "/products/tag/All"
     end
@@ -40,10 +45,6 @@ class App < Sinatra::Base
     end 
     
     get '/products/:id' do |id|
-        @user_id = session[:user_id]
-        @user_access = db.execute('SELECT access FROM users WHERE id = ?', @user_id).first
-        p @user_access
-
         @product = db.execute('SELECT * FROM products WHERE id = ?', id).first
         @reviews = db.execute('SELECT * FROM reviews INNER JOIN product_reviews ON reviews.id = product_reviews.review_id INNER JOIN products ON product_reviews.product_id = products.id WHERE products.id = ?', id)
         @product_tags = db.execute('SELECT * FROM tags INNER JOIN product_tags ON tags.id = product_tags.tag_id INNER JOIN products ON products.id = product_tags.product_id WHERE products.id = ?', id)
@@ -62,15 +63,23 @@ class App < Sinatra::Base
     end
 
     get '/products/:id/delete' do |id|
-        @product = db.execute('SELECT * FROM products WHERE id = ?', id).first
-        erb :'products/delete'
+        if @user_access != 2
+            redirect "/"
+        else
+            @product = db.execute('SELECT * FROM products WHERE id = ?', id).first
+            erb :'products/delete'
+        end
     end
 
     get '/products/:id/edit' do |id|
-        @product = db.execute('SELECT * FROM products WHERE id = ?', id).first
-        @tags = db.execute('SELECT * FROM tags')
-        @product_tags = db.execute('SELECT * FROM tags INNER JOIN product_tags ON tags.id = product_tags.tag_id INNER JOIN products ON products.id = product_tags.product_id WHERE products.id = ?', id)
-        erb :'products/edit'
+        if @user_access != 2
+            redirect "/"
+        else
+            @product = db.execute('SELECT * FROM products WHERE id = ?', id).first
+            @tags = db.execute('SELECT * FROM tags')
+            @product_tags = db.execute('SELECT * FROM tags INNER JOIN product_tags ON tags.id = product_tags.tag_id INNER JOIN products ON products.id = product_tags.product_id WHERE products.id = ?', id)
+            erb :'products/edit'
+        end
     end
 
     post '/products/create' do
@@ -84,12 +93,6 @@ class App < Sinatra::Base
 
         result = db.execute('INSERT INTO products (name, description, price, image_path) VALUES (?, ?, ?, ?) RETURNING *', params[:name], params[:description], params[:price], file_path).first
         redirect "/products/#{result["id"]}"
-    end
-
-    post '/products/review/:id' do |id|
-        result = db.execute('INSERT INTO reviews (rating, review) VALUES (?, ?) RETURNING *', params[:rating], h(params[:review])).first
-        db.execute('INSERT INTO product_reviews (product_id, review_id) VALUES (?, ?)', id, result['id'])
-        redirect "/products/#{id}"
     end
 
     post '/products/tags' do
@@ -136,6 +139,12 @@ class App < Sinatra::Base
             result = db.execute('UPDATE products SET name = ?, description = ?, price= ? WHERE id = ? RETURNING *', params[:name], params[:description], params[:price], id).first
         end
         redirect "/products/#{result['id']}"
+    end
+
+    post '/review/:id/create' do |id|
+        result = db.execute('INSERT INTO reviews (rating, review) VALUES (?, ?) RETURNING *', params[:rating], h(params[:review])).first
+        db.execute('INSERT INTO product_reviews (product_id, review_id) VALUES (?, ?)', id, result['id'])
+        redirect "/products/#{id}"
     end
 
     get '/reviews/:id/delete' do |id|
