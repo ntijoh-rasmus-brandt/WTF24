@@ -14,7 +14,7 @@
 </ul>
 <a href="/products/tag/All">Return To Homepage</a>
 
-<% if @user_access != nil && @user_access['access'] == 2 %>
+<% if @user_access != nil && @user_access == 2 %>
     <a href="/products/<%=@product['id']%>/edit">Edit Product</a>
     <a href="/products/<%=@product['id']%>/delete">Delete Product</a><br><br>
 <% end %>
@@ -32,7 +32,7 @@
         <h2><%=review['username']%> </h2>
         <h2>Rating:<%=review['rating']%>/5</h2>
         <p><%=review['review']%></p>
-        <% if @user_access != nil && @user_access['access'] == 2 %>
+        <% if @user_access != nil && @user_access == 2 %>
             <a href="/reviews/<%=review['review_id']%>/delete">Delete Comment</a>
         <%end%>
     </div>

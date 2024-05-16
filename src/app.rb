@@ -18,7 +18,9 @@ class App < Sinatra::Base
 
     before do
         @user_id = session[:user_id]
-        @user_access = db.execute('SELECT access FROM users WHERE id = ?', @user_id).first
+        if @user_id != nil
+            @user_access = db.execute('SELECT access FROM users WHERE id = ?', @user_id).first['access']
+        end
     end
 
     get '/' do
@@ -216,7 +218,7 @@ class App < Sinatra::Base
         exists = db.execute('SELECT * FROM users WHERE username = ?', params[:username])
         if exists.empty?
             hashed_password = BCrypt::Password.create(params[:password])
-            db.execute('INSERT INTO users (username, password, access) VALUES (?,?,?)', params[:username], hashed_password, 1)
+            db.execute('INSERT INTO users (username, password, access) VALUES (?,?,?)', h(params[:username]), hashed_password, 1)
             redirect '/users/login'
         else
             redirect '/users/register'
@@ -225,7 +227,7 @@ class App < Sinatra::Base
     end
 
     post '/users/login' do
-        user = db.execute('SELECT * FROM users WHERE username = ?', params[:username]).first
+        user = db.execute('SELECT * FROM users WHERE username = ?', h(params[:username])).first
         password_from_db = BCrypt::Password.new(user['password'])
         if password_from_db == params[:password]
             session[:user_id] = user['id']
