@@ -19,16 +19,21 @@
     <a href="/products/<%=@product['id']%>/delete">Delete Product</a><br><br>
 <% end %>
 
-<form action="/review/<%=@product['id']%>/create" method='post'>
-    Rating: <input type="number" min = "0" max = "5" required="required" name='rating'></input><br><br>
-    Review: <input type="text" name='review'></input><br><br>
-    <button type="submit">Comment</button>
-</form><br><br>
+<% if @user_id != nil%>
+    <form action="/review/<%=@product['id']%>/create" method='post'>
+        Rating: <input type="number" min = "0" max = "5" required="required" name='rating'></input><br><br>
+        Review: <input type="text" name='review'></input><br><br>
+        <button type="submit">Comment</button>
+    </form><br><br>
+<% end %>
 
 <% @reviews.each do |review| %>
     <div class="review">
+        <h2><%=review['username']%> </h2>
         <h2>Rating:<%=review['rating']%>/5</h2>
         <p><%=review['review']%></p>
-        <a href="/reviews/<%=review['review_id']%>/delete">Delete Comment</a>
+        <% if @user_access != nil && @user_access['access'] == 2 %>
+            <a href="/reviews/<%=review['review_id']%>/delete">Delete Comment</a>
+        <%end%>
     </div>
 <% end %>
