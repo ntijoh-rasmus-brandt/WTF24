@@ -3,10 +3,13 @@ require_relative 'models/tag'
 require_relative 'models/review'
 require_relative 'models/user'
 
+require 'sinatra/flash'
+
 
 class App < Sinatra::Base
 
     enable :sessions
+    register Sinatra::Flash
 
     def db
         if @db == nil
@@ -235,11 +238,16 @@ class App < Sinatra::Base
     post '/users/login' do
         user = User.find_username(h(params[:username])).first
         password_from_db = BCrypt::Password.new(user['password'])
+
+
         if password_from_db == params[:password]
+            User.login_attempt(user['id'], 1, Time.now.strftime("%Y-%m-%d %H:%M:%S.%L"))
             session[:user_id] = user['id']
-            redirect '/products/1'
+            redirect '/'
         else
-            redirect '/products/2'
+            User.login_attempt(user['id'], 0, Time.now.strftime("%Y-%m-%d %H:%M:%S.%L"))
+            flash[:notice] = "Login Failed!"
+            redirect '/users/login'
         end
     end
 
