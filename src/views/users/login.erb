@@ -4,4 +4,5 @@
     <button type="submit">Log In</button>
 </form>
 
-<%=flash.inspect %>
+<%=flash[:login_fail]%>
+<%=flash[:login_cooldown]%>

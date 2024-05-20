@@ -11,8 +11,12 @@ module User
         db.execute('INSERT INTO users (username, password, access) VALUES (?,?,?)', username, password, access)
     end
 
-    def self.login_attempt(user_id, successful, date)
+    def self.create_login_attempt(user_id, successful, date)
         db.execute('INSERT INTO user_login (user_id, successful, date) VALUES (?,?,?)', user_id, successful, date)
+    end
+
+    def self.login_attempt(user_id)
+        db.execute('SELECT * FROM user_login WHERE user_id = ? AND successful = 0 ORDER BY id DESC LIMIT 1', user_id).first
     end
 
     def self.db 
