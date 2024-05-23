@@ -238,6 +238,10 @@ class App < Sinatra::Base
 
     post '/users/login' do
         user = User.find_username(h(params[:username])).first
+        if user == nil
+            flash[:login_fail] = "Username or Password incorrect!"
+            redirect '/users/login'
+        end
         password_from_db = BCrypt::Password.new(user['password'])
         user_login_attempt = User.login_attempt(user['id'])
         if Time.now - Time.parse(user_login_attempt['date']) < 10
@@ -250,7 +254,7 @@ class App < Sinatra::Base
                 redirect '/'
             else
                 User.create_login_attempt(user['id'], 0, Time.now.strftime("%Y-%m-%d %H:%M:%S.%L"))
-                flash[:login_fail] = "Login Failed!"
+                flash[:login_fail] = "Username or Password incorrect!"
                 redirect '/users/login'
             end
         end
