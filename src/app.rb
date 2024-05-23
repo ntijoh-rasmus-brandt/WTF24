@@ -227,11 +227,11 @@ class App < Sinatra::Base
         exists = User.find_username(params[:username])
         if exists.empty?
             flash[:username_taken] = "Please use another username."
+            redirect '/users/register'
+        else
             hashed_password = BCrypt::Password.create(params[:password])
             User.create(h(params[:username]), hashed_password, 1)
             redirect '/users/login'
-        else
-            redirect '/users/register'
         end
 
     end
@@ -244,6 +244,19 @@ class App < Sinatra::Base
         end
         password_from_db = BCrypt::Password.new(user['password'])
         user_login_attempt = User.login_attempt(user['id'])
+        
+        if user_login_attempt == nil
+            if password_from_db == params[:password]
+                User.create_login_attempt(user['id'], 1, Time.now.strftime("%Y-%m-%d %H:%M:%S.%L"))
+                session[:user_id] = user['id']
+                redirect '/'
+            else
+                User.create_login_attempt(user['id'], 0, Time.now.strftime("%Y-%m-%d %H:%M:%S.%L"))
+                flash[:login_fail] = "Username or Password!"
+                redirect '/users/login'
+            end
+        end
+
         if Time.now - Time.parse(user_login_attempt['date']) < 10
             flash[:login_cooldown] = "Please wait 5 seconds before attempting to login again."
             redirect '/users/login'
@@ -254,7 +267,7 @@ class App < Sinatra::Base
                 redirect '/'
             else
                 User.create_login_attempt(user['id'], 0, Time.now.strftime("%Y-%m-%d %H:%M:%S.%L"))
-                flash[:login_fail] = "Username or Password incorrect!"
+                flash[:login_fail] = "Username or Password!"
                 redirect '/users/login'
             end
         end
